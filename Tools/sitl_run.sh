@@ -76,11 +76,19 @@ elif [ "$program" == "gazebo" ] && [ ! -n "$no_sim" ]; then
 		if  [[ -z "$DONT_RUN" ]]; then
 			# Set the plugin path so Gazebo finds our model and sim
 			source "$src_path/Tools/setup_gazebo.bash" "${src_path}" "${build_path}"
-			if [ -z ${src_path}/Tools/sitl_gazebo/worlds/${model}.world ]; then
-				gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${model}.world" &
+			if [ -z $PX4_SITL_WORLD ]; then
+				#Spawn predefined world
+				if [ -z ${src_path}/Tools/sitl_gazebo/worlds/${model}.world ]; then
+					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${model}.world" &
+				else
+					#Spawn empty world if world with model name doesn't exist
+					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/empty.world" &
+				fi
 			else
-				gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/empty.world" &
+				# Spawn world from environment variable
+				gzserver --verbose $PX4_SITL_WORLD &
 			fi
+
 			gz model --spawn-file=${src_path}/Tools/sitl_gazebo/models/${model}/${model}.sdf --model-name=${model}
 
 			SIM_PID=`echo $!`
