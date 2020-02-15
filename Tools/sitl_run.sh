@@ -89,7 +89,7 @@ elif [ "$program" == "gazebo" ] && [ ! -n "$no_sim" ]; then
 				gzserver --verbose $PX4_SITL_WORLD &
 			fi
 
-			gz model --spawn-file=${src_path}/Tools/sitl_gazebo/models/${model}/${model}.sdf --model-name=${model}
+			gz model --spawn-file=${src_path}/Tools/sitl_gazebo/models/${model}/${model}.sdf --model-name=${model} -x 0.0 -y 0.0 -z 0.1
 
 			SIM_PID=`echo $!`
 
