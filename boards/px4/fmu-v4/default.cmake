@@ -71,6 +71,7 @@ px4_add_board(
 		logger
 		mavlink
 		mc_att_control
+		mc_hover_thrust_estimator
 		mc_pos_control
 		mc_rate_control
 		#micrortps_bridge
@@ -80,9 +81,9 @@ px4_add_board(
 		sensors
 		sih
 		temperature_compensation
+		uuv_att_control
 		vmount
 		vtol_att_control
-		uuv_att_control
 	SYSTEMCMDS
 		bl_update
 		config
