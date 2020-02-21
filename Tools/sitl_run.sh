@@ -6,8 +6,9 @@ sitl_bin="$1"
 debugger="$2"
 program="$3"
 model="$4"
-src_path="$5"
-build_path="$6"
+world="$5"
+src_path="$6"
+build_path="$7"
 # The rest of the arguments are files to copy into the working dir.
 
 echo SITL ARGS
@@ -16,6 +17,7 @@ echo sitl_bin: $sitl_bin
 echo debugger: $debugger
 echo program: $program
 echo model: $model
+echo world: $world
 echo src_path: $src_path
 echo build_path: $build_path
 
@@ -41,8 +43,13 @@ if [ "$model" == "" ] || [ "$model" == "none" ]; then
 	model="iris"
 fi
 
-if [ "$#" -lt 6 ]; then
-	echo usage: sitl_run.sh sitl_bin debugger program model src_path build_path
+if [ "$world" == "" ] || [ "$world" == "none" ]; then
+	echo "empty world, setting empty.world as default"
+	world="empty"
+fi
+
+if [ "$#" -lt 7 ]; then
+	echo usage: sitl_run.sh sitl_bin debugger program model world src_path build_path
 	echo ""
 	exit 1
 fi
@@ -60,7 +67,7 @@ fi
 cp "$src_path/Tools/posix_lldbinit" "$rootfs/.lldbinit"
 cp "$src_path/Tools/posix.gdbinit" "$rootfs/.gdbinit"
 
-shift 6
+shift 7
 for file in "$@"; do
 	cp "$file" $rootfs/
 done
@@ -82,7 +89,7 @@ elif [ "$program" == "gazebo" ] && [ ! -n "$no_sim" ]; then
 					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${model}.world" &
 				else
 					#Spawn empty world if world with model name doesn't exist
-					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/empty.world" &
+					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${world}.world" &
 				fi
 			else
 				# Spawn world from environment variable
