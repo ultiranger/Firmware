@@ -43,11 +43,6 @@ if [ "$model" == "" ] || [ "$model" == "none" ]; then
 	model="iris"
 fi
 
-if [ "$world" == "" ] || [ "$world" == "none" ]; then
-	echo "empty world, setting empty.world as default"
-	world="empty"
-fi
-
 if [ "$#" -lt 7 ]; then
 	echo usage: sitl_run.sh sitl_bin debugger program model world src_path build_path
 	echo ""
@@ -85,8 +80,14 @@ elif [ "$program" == "gazebo" ] && [ ! -n "$no_sim" ]; then
 			source "$src_path/Tools/setup_gazebo.bash" "${src_path}" "${build_path}"
 			if [ -z $PX4_SITL_WORLD ]; then
 				#Spawn predefined world
-				if [ -z ${src_path}/Tools/sitl_gazebo/worlds/${model}.world ]; then
-					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${model}.world" &
+				if [ "$world" == "none" ]; then
+					if [ -z ${src_path}/Tools/sitl_gazebo/worlds/${model}.world ]; then
+						echo "empty world, setting empty.world as default"
+						gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/empty.world" &
+					else
+						echo "empty world, setting ${model}.world as default"
+						gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${model}.world" &
+					fi
 				else
 					#Spawn empty world if world with model name doesn't exist
 					gzserver --verbose "${src_path}/Tools/sitl_gazebo/worlds/${world}.world" &
